@@ -6,7 +6,7 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.004
+# v0.005
 # Issue 3
 # 20180217-
 #################################################
@@ -26,8 +26,6 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 LIGHTGREY = (230, 230, 230)
 BACKGROUND = (60, 185, 240)
-PIXELCOLOR = (255, 255, 255)
-HIGHLIGHT = (255, 128, 128)
 
 
 # load image function
@@ -69,6 +67,15 @@ class Screen(object):
         # blit background image
         if self.image != '':
             self.display.blit(self.image, (0, 0))
+
+
+# the Heads Up Display
+class Hud(object):
+    """
+    The HUD (Heads Up Display) will show on screen all relevant information
+    """
+    def __init__(self):
+        pass
 
 
 # event loop
