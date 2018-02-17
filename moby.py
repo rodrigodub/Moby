@@ -6,8 +6,9 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.001
-# 20180217
+# v0.004
+# Issue 3
+# 20180217-
 #################################################
 __author__ = 'Rodrigo Nobrega'
 
@@ -20,8 +21,11 @@ from pygame.locals import *
 
 
 # Global variables
+SCREENSIZE = (1024, 576)
 BLACK = (0, 0, 0)
-BACKGROUND = (230, 230, 230)
+WHITE = (255, 255, 255)
+LIGHTGREY = (230, 230, 230)
+BACKGROUND = (60, 185, 240)
 PIXELCOLOR = (255, 255, 255)
 HIGHLIGHT = (255, 128, 128)
 
@@ -44,8 +48,8 @@ class Screen(object):
     """Starts a screen and displays background"""
     def __init__(self, image_file=None):
         # physical parameters
-        self.size = (1024, 576)
-        self.bgcolour = [230, 230, 230]
+        self.size = SCREENSIZE
+        self.bgcolour = BACKGROUND
         # the canvas
         self.display = pygame.display.set_mode(self.size)
         self.title = pygame.display.set_caption('Moby Dick')
@@ -80,7 +84,7 @@ def eventloop(scr, fnt, clk):
         clk.tick(60)
         # write text
         # scr.display.blit(scr.image, (120, 5, 50, 30), (120, 5, 50, 30))
-        scr.display.blit(writetext(fnt, 'OK: {}'.format('0'), (100, 100, 100)), (10, 10))
+        scr.display.blit(writetext(fnt, 'OK: {}'.format('0'), LIGHTGREY), (10, 10))
         # refresh display
         pygame.display.flip()
 
@@ -91,7 +95,7 @@ def main():
     # start Pygame
     pygame.init()
     pygame.mixer.init()
-    font1 = pygame.font.Font('fonts/Chicago Normal.ttf', 16)
+    font1 = pygame.font.Font('fonts/Chicago Normal.ttf', 12)
     clock = pygame.time.Clock()
     # score = 0
     # start the display
