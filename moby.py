@@ -6,7 +6,7 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.005
+# v0.006
 # Issue 3
 # 20180217-
 #################################################
@@ -75,12 +75,34 @@ class Hud(object):
     The HUD (Heads Up Display) will show on screen all relevant information
     """
     def __init__(self):
-        pass
+        self.left = ['Wind Direction', 'Wind Intensity']
+        self.middle = ['Absolute Sail','Relative Sail', 'Point of Sail']
+        self.right = ['Heading', 'Tiller', 'Rudder']
+
+    def draw(self, fnt, scr):
+        # HUD text
+        scr.display.blit(writetext(fnt, self.left[0], LIGHTGREY), (5, 5))
+        scr.display.blit(writetext(fnt, self.left[1], LIGHTGREY), (5, 20))
+        scr.display.blit(writetext(fnt, self.middle[0], LIGHTGREY), (150, 5))
+        scr.display.blit(writetext(fnt, self.middle[1], LIGHTGREY), (150, 20))
+        scr.display.blit(writetext(fnt, self.middle[2], LIGHTGREY), (150, 35))
+        scr.display.blit(writetext(fnt, self.right[0], LIGHTGREY), (300, 5))
+        scr.display.blit(writetext(fnt, self.right[1], LIGHTGREY), (300, 20))
+        scr.display.blit(writetext(fnt, self.right[2], LIGHTGREY), (300, 35))
+        # HUD values
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (100, 5))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (100, 20))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (240, 5))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (240, 20))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (240, 35))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (355, 5))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (355, 20))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (355, 35))
 
 
 # event loop
-def eventloop(scr, fnt, clk):
-    # arguments: scr=screen, fnt=font, clk=clock
+def eventloop(scr, fnt, clk, hud):
+    # arguments: scr=screen, fnt=font, clk=clock, hud=HUD
     a = 1
     while a == 1:
         # quit gracefully
@@ -91,7 +113,7 @@ def eventloop(scr, fnt, clk):
         clk.tick(60)
         # write text
         # scr.display.blit(scr.image, (120, 5, 50, 30), (120, 5, 50, 30))
-        scr.display.blit(writetext(fnt, 'OK: {}'.format('0'), LIGHTGREY), (10, 10))
+        hud.draw(fnt, scr)
         # refresh display
         pygame.display.flip()
 
@@ -108,8 +130,10 @@ def main():
     # start the display
     screen = Screen()
     # screen = Screen('background green 640x480.png')
+    # initialize HUD
+    hud = Hud()
     # start the event loop
-    eventloop(screen, font1, clock)
+    eventloop(screen, font1, clock, hud)
 
 
 # execute main
