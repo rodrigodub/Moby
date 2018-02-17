@@ -3,17 +3,17 @@
 The system will simulate the basics of sailing. 
 
 ## The sailboat
-Sail, Tiller and Rudder, Hull and Keel
-Heading
-Sail Angle: Relative and Absolute
+- Sail, Tiller and Rudder, Hull and Keel
+- Heading
+- Sail Angle: Relative and Absolute
 
 ## The wind
-The sailing recipe
-Wind-Force
-Sail-Force
-Keel-Force
-Forward-Force
-Drag
+- The sailing recipe
+- Wind-Force
+- Sail-Force
+- Keel-Force
+- Forward-Force
+- Drag
 
 ### Sailing Objective
 Optimize forward-force while moving toward the target by determining the optimal sail angle and rudder direction.
