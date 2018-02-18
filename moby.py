@@ -6,9 +6,9 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.006
-# Issue 3
-# 20180217-
+# v0.009
+# Issue 2
+# 20180217-20180218
 #################################################
 __author__ = 'Rodrigo Nobrega'
 
@@ -16,12 +16,17 @@ __author__ = 'Rodrigo Nobrega'
 # import
 import os, sys, pygame
 from pygame.locals import *
-# import random
+import random
 # import math
 
 
 # Global variables
+# sizes and position
 SCREENSIZE = (1024, 576)
+HUDLEFT = 5
+HUDMIDDLE = 200
+HUDRIGHT = 400
+# colours
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 LIGHTGREY = (230, 230, 230)
@@ -74,35 +79,73 @@ class Hud(object):
     """
     The HUD (Heads Up Display) will show on screen all relevant information
     """
-    def __init__(self):
-        self.left = ['Wind Direction', 'Wind Intensity']
+    def __init__(self, fnt, scr):
+        self.left = ['Wind Direction', 'Wind Speed']
         self.middle = ['Absolute Sail','Relative Sail', 'Point of Sail']
         self.right = ['Heading', 'Tiller', 'Rudder']
+        self.initial(fnt, scr)
 
-    def draw(self, fnt, scr):
+    def initial(self, fnt, scr):
         # HUD text
-        scr.display.blit(writetext(fnt, self.left[0], LIGHTGREY), (5, 5))
-        scr.display.blit(writetext(fnt, self.left[1], LIGHTGREY), (5, 20))
-        scr.display.blit(writetext(fnt, self.middle[0], LIGHTGREY), (150, 5))
-        scr.display.blit(writetext(fnt, self.middle[1], LIGHTGREY), (150, 20))
-        scr.display.blit(writetext(fnt, self.middle[2], LIGHTGREY), (150, 35))
-        scr.display.blit(writetext(fnt, self.right[0], LIGHTGREY), (300, 5))
-        scr.display.blit(writetext(fnt, self.right[1], LIGHTGREY), (300, 20))
-        scr.display.blit(writetext(fnt, self.right[2], LIGHTGREY), (300, 35))
+        scr.display.blit(writetext(fnt, self.left[0], LIGHTGREY), (HUDLEFT, 5))
+        scr.display.blit(writetext(fnt, self.left[1], LIGHTGREY), (HUDLEFT, 20))
+        scr.display.blit(writetext(fnt, self.middle[0], LIGHTGREY), (HUDMIDDLE, 5))
+        scr.display.blit(writetext(fnt, self.middle[1], LIGHTGREY), (HUDMIDDLE, 20))
+        scr.display.blit(writetext(fnt, self.middle[2], LIGHTGREY), (HUDMIDDLE, 35))
+        scr.display.blit(writetext(fnt, self.right[0], LIGHTGREY), (HUDRIGHT, 5))
+        scr.display.blit(writetext(fnt, self.right[1], LIGHTGREY), (HUDRIGHT, 20))
+        scr.display.blit(writetext(fnt, self.right[2], LIGHTGREY), (HUDRIGHT, 35))
+
+    def draw(self, fnt, scr, wind):
+        # clean
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 5, 50, 15), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 20, 50, 15), 0)
         # HUD values
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (100, 5))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (100, 20))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (240, 5))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (240, 20))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (240, 35))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (355, 5))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (355, 20))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (355, 35))
+        scr.display.blit(writetext(fnt, ':  {}'.format(wind.direction), LIGHTGREY), (HUDLEFT + 95, 5))
+        scr.display.blit(writetext(fnt, ':  {}'.format(wind.speed), LIGHTGREY), (HUDLEFT + 95, 20))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 5))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 20))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 35))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 5))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 20))
+        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 35))
+
+
+# the Wind
+class Wind(object):
+    """
+    Everything related to the Wind.
+    Wind Speed measured in Knots.
+    """
+    def __init__(self):
+        self.direction = random.randint(0, 360)
+        self.speed = random.randint(0, 21)
+
+    def changedirection(self):
+        if random.randint(0, 200) == 1:
+            self.direction += 2 * (random.randint(0, 2) - 1)
+        if self.direction >= 360:
+            self.direction = self.direction - 360
+        if self.direction < 0:
+            self.direction = 360 + self.direction
+
+    def changespeed(self):
+        if random.randint(0, 200) == 1:
+            self.speed += random.randint(0, 2) - 1
+        # limit to Beaufort force 5
+        if self.speed < 0:
+            self.speed = 0
+        if self.speed > 21:
+            self.speed = 21
+
+    def update(self):
+        self.changedirection()
+        self.changespeed()
 
 
 # event loop
-def eventloop(scr, fnt, clk, hud):
-    # arguments: scr=screen, fnt=font, clk=clock, hud=HUD
+def eventloop(scr, fnt, clk, hud, wind):
+    # arguments: scr=screen, fnt=font, clk=clock, hud=HUD, wind=wind
     a = 1
     while a == 1:
         # quit gracefully
@@ -113,7 +156,9 @@ def eventloop(scr, fnt, clk, hud):
         clk.tick(60)
         # write text
         # scr.display.blit(scr.image, (120, 5, 50, 30), (120, 5, 50, 30))
-        hud.draw(fnt, scr)
+        hud.draw(fnt, scr, wind)
+        # change wind direction & speed
+        wind.update()
         # refresh display
         pygame.display.flip()
 
@@ -131,9 +176,11 @@ def main():
     screen = Screen()
     # screen = Screen('background green 640x480.png')
     # initialize HUD
-    hud = Hud()
+    hud = Hud(font1, screen)
+    # create the Wind
+    wind = Wind()
     # start the event loop
-    eventloop(screen, font1, clock, hud)
+    eventloop(screen, font1, clock, hud, wind)
 
 
 # execute main
