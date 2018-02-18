@@ -26,3 +26,4 @@ Sail across the world over real satellite imagery. Record visited places on a vi
 - [School of Sailing Points of Sail](http://www.schoolofsailing.net/points-of-sail.html)
 - [The Physics of Sailing](http://newt.phys.unsw.edu.au/~jw/sailing.html)
 - [Physics and Sailing PDF](https://sailsim.org/Physics_and_Sailing.pdf)
+- Wikipedia article for the wind's [Beaufort Scale](https://en.wikipedia.org/wiki/Beaufort_scale)
