@@ -22,7 +22,7 @@ Optimize forward-force while moving toward the target by determining the optimal
 Sail across the world over real satellite imagery. Record visited places on a virtual GPS log.
 
 ### Useful links
-- [Wikipedia Point of Sail](http://www.schoolofsailing.net/points-of-sail.html)
+- Wikipedia [Point of Sail](http://www.schoolofsailing.net/points-of-sail.html)
 - [School of Sailing Points of Sail](http://www.schoolofsailing.net/points-of-sail.html)
 - [The Physics of Sailing](http://newt.phys.unsw.edu.au/~jw/sailing.html)
 - [Physics and Sailing PDF](https://sailsim.org/Physics_and_Sailing.pdf)
