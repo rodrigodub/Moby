@@ -6,7 +6,7 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.009
+# v0.012
 # Issue 2
 # 20180217-20180218
 #################################################
@@ -101,8 +101,8 @@ class Hud(object):
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 5, 50, 15), 0)
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 20, 50, 15), 0)
         # HUD values
-        scr.display.blit(writetext(fnt, ':  {}'.format(wind.direction), LIGHTGREY), (HUDLEFT + 95, 5))
-        scr.display.blit(writetext(fnt, ':  {}'.format(wind.speed), LIGHTGREY), (HUDLEFT + 95, 20))
+        scr.display.blit(writetext(fnt, ':  {} deg'.format(wind.direction), LIGHTGREY), (HUDLEFT + 95, 5))
+        scr.display.blit(writetext(fnt, ':  {} kn'.format(wind.speed), LIGHTGREY), (HUDLEFT + 95, 20))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 5))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 20))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 35))
