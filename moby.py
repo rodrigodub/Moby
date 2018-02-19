@@ -6,7 +6,7 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.012
+# v0.014
 # Issue 2
 # 20180217-20180218
 #################################################
@@ -24,8 +24,8 @@ import random
 # sizes and position
 SCREENSIZE = (1024, 576)
 HUDLEFT = 5
-HUDMIDDLE = 200
-HUDRIGHT = 400
+HUDMIDDLE = 250
+HUDRIGHT = 450
 # colours
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -80,8 +80,8 @@ class Hud(object):
     The HUD (Heads Up Display) will show on screen all relevant information
     """
     def __init__(self, fnt, scr):
-        self.left = ['Wind Direction', 'Wind Speed']
-        self.middle = ['Absolute Sail','Relative Sail', 'Point of Sail']
+        self.left = ['Wind Direction', 'Wind Speed', 'Beaufort']
+        self.middle = ['Absolute Sail', 'Relative Sail', 'Point of Sail']
         self.right = ['Heading', 'Tiller', 'Rudder']
         self.initial(fnt, scr)
 
@@ -89,6 +89,7 @@ class Hud(object):
         # HUD text
         scr.display.blit(writetext(fnt, self.left[0], LIGHTGREY), (HUDLEFT, 5))
         scr.display.blit(writetext(fnt, self.left[1], LIGHTGREY), (HUDLEFT, 20))
+        scr.display.blit(writetext(fnt, self.left[2], LIGHTGREY), (HUDLEFT, 35))
         scr.display.blit(writetext(fnt, self.middle[0], LIGHTGREY), (HUDMIDDLE, 5))
         scr.display.blit(writetext(fnt, self.middle[1], LIGHTGREY), (HUDMIDDLE, 20))
         scr.display.blit(writetext(fnt, self.middle[2], LIGHTGREY), (HUDMIDDLE, 35))
@@ -100,9 +101,11 @@ class Hud(object):
         # clean
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 5, 50, 15), 0)
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 20, 50, 15), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 35, 50, 15), 0)
         # HUD values
         scr.display.blit(writetext(fnt, ':  {} deg'.format(wind.direction), LIGHTGREY), (HUDLEFT + 95, 5))
-        scr.display.blit(writetext(fnt, ':  {} kn'.format(wind.speed), LIGHTGREY), (HUDLEFT + 95, 20))
+        scr.display.blit(writetext(fnt, ':  {:.1f} m/s'.format(wind.speed), LIGHTGREY), (HUDLEFT + 95, 20))
+        scr.display.blit(writetext(fnt, ':  {}'.format(wind.beaufort), LIGHTGREY), (HUDLEFT + 95, 35))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 5))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 20))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 35))
@@ -119,7 +122,10 @@ class Wind(object):
     """
     def __init__(self):
         self.direction = random.randint(0, 360)
-        self.speed = random.randint(0, 21)
+        # limit speed to Beaufort Force 5
+        self.speed = round(random.random() * 10.7, 1)
+        # Beaufort scale
+        self.beaufort = ''
 
     def changedirection(self):
         if random.randint(0, 200) == 1:
@@ -131,16 +137,25 @@ class Wind(object):
 
     def changespeed(self):
         if random.randint(0, 200) == 1:
-            self.speed += random.randint(0, 2) - 1
+            self.speed += round(random.random() * 0.6 - 0.3, 1)
         # limit to Beaufort force 5
         if self.speed < 0:
             self.speed = 0
-        if self.speed > 21:
-            self.speed = 21
+        if self.speed > 10.7:
+            self.speed = 10.7
+        #print(self.speed)
+
+    def beaufortscale(self):
+        beau = {'Calm': 0.3, 'Light air': 1.5, 'Light breeze': 3.3, 'Gentle breeze': 5.5
+                   , 'Moderate breeze': 7.9, 'Fresh breeze': 10.7, 'Strong breeze': 13.8
+                   , 'High wind': 17.1, 'Gale': 20.7, 'Strong gale': 24.4, 'Storm': 28.4
+                   , 'Violent storm': 32.6, 'Hurricane': 100}
+        self.beaufort = list(beau.keys())[list(beau.values()).index(min([i for i in beau.values() if self.speed < i]))]
 
     def update(self):
         self.changedirection()
         self.changespeed()
+        self.beaufortscale()
 
 
 # event loop
