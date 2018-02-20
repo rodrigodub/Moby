@@ -6,9 +6,9 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.014
+# v0.015
 # Issue 2
-# 20180217-20180218
+# 20180217-20180220
 #################################################
 __author__ = 'Rodrigo Nobrega'
 
@@ -30,7 +30,7 @@ HUDRIGHT = 450
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 LIGHTGREY = (230, 230, 230)
-BACKGROUND = (60, 185, 240)
+BACKGROUND = (0, 171, 214)
 
 
 # load image function
