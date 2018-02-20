@@ -6,7 +6,7 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.015
+# v0.016
 # Issue 2
 # 20180217-20180220
 #################################################
@@ -126,6 +126,10 @@ class Wind(object):
         self.speed = round(random.random() * 10.7, 1)
         # Beaufort scale
         self.beaufort = ''
+        # representation
+        self.image = load_image('windarrow30.png')
+        self.pos = self.image.get_rect()
+        self.pos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
 
     def changedirection(self):
         if random.randint(0, 200) == 1:
@@ -152,6 +156,15 @@ class Wind(object):
                    , 'Violent storm': 32.6, 'Hurricane': 100}
         self.beaufort = list(beau.keys())[list(beau.values()).index(min([i for i in beau.values() if self.speed < i]))]
 
+    def draw(self, scr):
+        # rotate image
+        rot = pygame.transform.rotate(self.image, 360-self.direction)
+        rotrect = rot.get_rect()
+        rotrect.center = self.pos.center
+        # delete and redraw
+        pygame.draw.rect(scr.display, BACKGROUND, (SCREENSIZE[0] / 2 - 100, SCREENSIZE[1] / 2 - 100, 200, 200), 0)
+        scr.display.blit(rot, rotrect)
+
     def update(self):
         self.changedirection()
         self.changespeed()
@@ -174,6 +187,7 @@ def eventloop(scr, fnt, clk, hud, wind):
         hud.draw(fnt, scr, wind)
         # change wind direction & speed
         wind.update()
+        wind.draw(scr)
         # refresh display
         pygame.display.flip()
 
