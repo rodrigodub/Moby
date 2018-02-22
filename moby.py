@@ -6,9 +6,9 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.016
+# v0.018
 # Issue 2
-# 20180217-20180220
+# 20180217-20180222
 #################################################
 __author__ = 'Rodrigo Nobrega'
 
@@ -122,8 +122,9 @@ class Wind(object):
     """
     def __init__(self):
         self.direction = random.randint(0, 360)
-        # limit speed to Beaufort Force 5
-        self.speed = round(random.random() * 10.7, 1)
+        # limit speed to some Beaufort scale
+        self.maxspeed = 25
+        self.speed = round(random.random() * self.maxspeed, 1)
         # Beaufort scale
         self.beaufort = ''
         # representation
@@ -142,11 +143,11 @@ class Wind(object):
     def changespeed(self):
         if random.randint(0, 200) == 1:
             self.speed += round(random.random() * 0.6 - 0.3, 1)
-        # limit to Beaufort force 5
+        # limit to maximum speed
         if self.speed < 0:
             self.speed = 0
-        if self.speed > 10.7:
-            self.speed = 10.7
+        if self.speed > self.maxspeed:
+            self.speed = self.maxspeed
         #print(self.speed)
 
     def beaufortscale(self):
@@ -156,9 +157,20 @@ class Wind(object):
                    , 'Violent storm': 32.6, 'Hurricane': 100}
         self.beaufort = list(beau.keys())[list(beau.values()).index(min([i for i in beau.values() if self.speed < i]))]
 
+    def arrowsize(self):
+        # define the size of wind representation depending on wind speed
+        if self.speed < 0:
+            return 20
+        elif self.speed > 35:
+            return 200
+        else:
+            return int(5.14 * self.speed + 20)
+
     def draw(self, scr):
-        # rotate image
-        rot = pygame.transform.rotate(self.image, 360-self.direction)
+        # rotate and scale image
+        rot = pygame.transform.rotate(
+            pygame.transform.scale(self.image, (self.arrowsize(), self.arrowsize()))
+            , 360-self.direction)
         rotrect = rot.get_rect()
         rotrect.center = self.pos.center
         # delete and redraw
