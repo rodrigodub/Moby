@@ -6,8 +6,8 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.018
-# Issue 2
+# v0.019
+# Issue #2
 # 20180217-20180222
 #################################################
 __author__ = 'Rodrigo Nobrega'
@@ -133,8 +133,13 @@ class Wind(object):
         self.pos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
 
     def changedirection(self):
+        # changes direction smootly
         if random.randint(0, 200) == 1:
             self.direction += 2 * (random.randint(0, 2) - 1)
+        # occasionally changes radically
+        if random.randint(0, 5000) == 1:
+            self.direction = random.randint(0, 360)
+        # resets if crosses limit
         if self.direction >= 360:
             self.direction = self.direction - 360
         if self.direction < 0:
@@ -148,7 +153,6 @@ class Wind(object):
             self.speed = 0
         if self.speed > self.maxspeed:
             self.speed = self.maxspeed
-        #print(self.speed)
 
     def beaufortscale(self):
         beau = {'Calm': 0.3, 'Light air': 1.5, 'Light breeze': 3.3, 'Gentle breeze': 5.5
