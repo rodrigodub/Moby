@@ -6,7 +6,7 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.021
+# v0.022
 # Issue #1
 # 20180217-20180224
 #################################################
@@ -187,9 +187,29 @@ class Wind(object):
         self.beaufortscale()
 
 
+# the Boat
+class Boat(object):
+    """Everything related to the boat"""
+    def __init__(self):
+        self.image = load_image('moby_cat_N.png')
+        self.pos = self.image.get_rect()
+        self.pos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
+
+    def draw(self, scr):
+        # rotate and scale image
+        # rot = pygame.transform.rotate(
+        #     pygame.transform.scale(self.image, (self.arrowsize(), self.arrowsize()))
+        #     , 360-self.direction)
+        # rotrect = rot.get_rect()
+        # rotrect.center = self.pos.center
+        # delete and redraw
+        #pygame.draw.rect(scr.display, BACKGROUND, (SCREENSIZE[0] / 2 - 100, SCREENSIZE[1] / 2 - 100, 200, 200), 0)
+        scr.display.blit(self.image, self.pos)
+
+
 # event loop
-def eventloop(scr, fnt, clk, hud, wind):
-    # arguments: scr=screen, fnt=font, clk=clock, hud=HUD, wind=wind
+def eventloop(scr, fnt, clk, hud, wind, boat):
+    # arguments: scr=screen, fnt=font, clk=clock, hud=HUD, wind=wind, boat=boat
     a = 1
     while a == 1:
         # quit gracefully
@@ -201,6 +221,8 @@ def eventloop(scr, fnt, clk, hud, wind):
         # write text
         # scr.display.blit(scr.image, (120, 5, 50, 30), (120, 5, 50, 30))
         hud.draw(fnt, scr, wind)
+        # draw boat
+        boat.draw(scr)
         # change wind direction & speed
         wind.update()
         wind.draw(scr)
@@ -224,8 +246,10 @@ def main():
     hud = Hud(font1, screen)
     # create the Wind
     wind = Wind()
+    # create the Boat
+    boat = Boat()
     # start the event loop
-    eventloop(screen, font1, clock, hud, wind)
+    eventloop(screen, font1, clock, hud, wind, boat)
 
 
 # execute main
