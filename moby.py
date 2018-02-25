@@ -25,7 +25,7 @@ import random
 SCREENSIZE = (1024, 576)
 HUDLEFT = 5
 HUDMIDDLE = 250
-HUDRIGHT = 450
+HUDRIGHT = 500
 # colours
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -109,7 +109,7 @@ class Hud(object):
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 35, 140, 15), 0)
         # pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 140, 15), 0)
         # pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 20, 140, 15), 0)
-        # pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 35, 140, 15), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 35, 140, 15), 0)
         pygame.draw.rect(scr.display, BACKGROUND, (HUDRIGHT + 55, 5, 140, 15), 0)
         # pygame.draw.rect(scr.display, BACKGROUND, (HUDRIGHT + 55, 20, 140, 15), 0)
         # pygame.draw.rect(scr.display, BACKGROUND, (HUDRIGHT + 55, 35, 140, 15), 0)
@@ -119,8 +119,8 @@ class Hud(object):
         scr.display.blit(writetext(fnt, ':  {}'.format(wind.beaufort), LIGHTGREY), (HUDLEFT + 95, 35))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 5))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 20))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 35))
-        scr.display.blit(writetext(fnt, ':  {}'.format(boat.direction), LIGHTGREY), (HUDRIGHT + 55, 5))
+        scr.display.blit(writetext(fnt, ':  {}'.format(boat.pointofsail), LIGHTGREY), (HUDMIDDLE + 90, 35))
+        scr.display.blit(writetext(fnt, ':  {} deg'.format(boat.direction), LIGHTGREY), (HUDRIGHT + 55, 5))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 20))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 35))
 
@@ -209,6 +209,7 @@ class Boat(object):
         self.pos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
         # direction
         self.direction = 0
+        self.pointofsail = ''
 
     def steer(self):
         # monitor keyboard
@@ -236,6 +237,16 @@ class Boat(object):
         pygame.draw.rect(scr.display, BACKGROUND, (SCREENSIZE[0] / 2 - 100, SCREENSIZE[1] / 2 - 100, 200, 200), 0)
         scr.display.blit(rot, rotrect)
 
+    def calculatesail(self, wind):
+        if -22.5 < wind.direction - self.direction <= 22.5:
+            self.pointofsail = 'In Irons'
+        else:
+            self.pointofsail = ''
+
+    def update(self, wind):
+        self.steer()
+        self.calculatesail(wind)
+
 
 # event loop
 def eventloop(scr, fnt, clk, hud, wind, boat):
@@ -252,7 +263,7 @@ def eventloop(scr, fnt, clk, hud, wind, boat):
         # scr.display.blit(scr.image, (120, 5, 50, 30), (120, 5, 50, 30))
         hud.draw(fnt, scr, wind, boat)
         # draw boat
-        boat.steer()
+        boat.update(wind)
         boat.draw(scr)
         # change wind direction & speed
         wind.update()
