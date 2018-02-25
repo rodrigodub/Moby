@@ -6,8 +6,8 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.023
-# Issue #1
+# v0.024
+# Issue #3
 # 20180217-20180225
 #################################################
 __author__ = 'Rodrigo Nobrega'
@@ -102,11 +102,17 @@ class Hud(object):
         scr.display.blit(writetext(fnt, self.right[1], LIGHTGREY), (HUDRIGHT, 20))
         scr.display.blit(writetext(fnt, self.right[2], LIGHTGREY), (HUDRIGHT, 35))
 
-    def draw(self, fnt, scr, wind):
+    def draw(self, fnt, scr, wind, boat):
         # clean
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 5, 140, 15), 0)
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 20, 140, 15), 0)
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 35, 140, 15), 0)
+        # pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 140, 15), 0)
+        # pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 20, 140, 15), 0)
+        # pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 35, 140, 15), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDRIGHT + 55, 5, 140, 15), 0)
+        # pygame.draw.rect(scr.display, BACKGROUND, (HUDRIGHT + 55, 20, 140, 15), 0)
+        # pygame.draw.rect(scr.display, BACKGROUND, (HUDRIGHT + 55, 35, 140, 15), 0)
         # HUD values
         scr.display.blit(writetext(fnt, ':  {} deg'.format(wind.direction), LIGHTGREY), (HUDLEFT + 95, 5))
         scr.display.blit(writetext(fnt, ':  {:.1f} m/s'.format(wind.speed), LIGHTGREY), (HUDLEFT + 95, 20))
@@ -114,7 +120,7 @@ class Hud(object):
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 5))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 20))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 35))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 5))
+        scr.display.blit(writetext(fnt, ':  {}'.format(boat.direction), LIGHTGREY), (HUDRIGHT + 55, 5))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 20))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 35))
 
@@ -244,7 +250,7 @@ def eventloop(scr, fnt, clk, hud, wind, boat):
         clk.tick(60)
         # write text
         # scr.display.blit(scr.image, (120, 5, 50, 30), (120, 5, 50, 30))
-        hud.draw(fnt, scr, wind)
+        hud.draw(fnt, scr, wind, boat)
         # draw boat
         boat.steer()
         boat.draw(scr)
