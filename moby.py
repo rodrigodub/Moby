@@ -6,9 +6,9 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.022
+# v0.023
 # Issue #1
-# 20180217-20180224
+# 20180217-20180225
 #################################################
 __author__ = 'Rodrigo Nobrega'
 
@@ -37,6 +37,11 @@ BACKGROUND = (0, 171, 214)
 def load_image(file):
     path = os.path.join('images', file)
     return pygame.image.load(path).convert_alpha()
+
+
+# image resize function
+def resize_image(img, factor):
+    return pygame.transform.scale(img, (img.get_rect().width // factor, img.get_rect().height // factor))
 
 
 # write text
@@ -99,9 +104,9 @@ class Hud(object):
 
     def draw(self, fnt, scr, wind):
         # clean
-        pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 5, 50, 15), 0)
-        pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 20, 50, 15), 0)
-        pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 35, 50, 15), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 5, 140, 15), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 20, 140, 15), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 35, 140, 15), 0)
         # HUD values
         scr.display.blit(writetext(fnt, ':  {} deg'.format(wind.direction), LIGHTGREY), (HUDLEFT + 95, 5))
         scr.display.blit(writetext(fnt, ':  {:.1f} m/s'.format(wind.speed), LIGHTGREY), (HUDLEFT + 95, 20))
@@ -130,7 +135,7 @@ class Wind(object):
         # representation
         self.image = load_image('windarrow30.png')
         self.pos = self.image.get_rect()
-        self.pos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
+        self.pos.center = (100, 150)
 
     def changedirection(self):
         # changes direction smootly
@@ -178,7 +183,7 @@ class Wind(object):
         rotrect = rot.get_rect()
         rotrect.center = self.pos.center
         # delete and redraw
-        pygame.draw.rect(scr.display, BACKGROUND, (SCREENSIZE[0] / 2 - 100, SCREENSIZE[1] / 2 - 100, 200, 200), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (0, 50, 200, 200), 0)
         scr.display.blit(rot, rotrect)
 
     def update(self):
@@ -191,20 +196,39 @@ class Wind(object):
 class Boat(object):
     """Everything related to the boat"""
     def __init__(self):
-        self.image = load_image('moby_cat_N.png')
+        # image and position
+        self.imagegroup = [resize_image(load_image('moby_cat_N.png'), 3), resize_image(load_image('moby_cat_L.png'), 3), resize_image(load_image('moby_cat_R.png'), 3)]
+        self.image = self.imagegroup[2]
         self.pos = self.image.get_rect()
         self.pos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
+        # direction
+        self.direction = 0
+
+    def steer(self):
+        # monitor keyboard
+        keys = pygame.key.get_pressed()
+        if keys[K_LEFT]:
+            self.image = self.imagegroup[1]
+            self.direction -= 1
+        elif keys[K_RIGHT]:
+            self.image = self.imagegroup[2]
+            self.direction += 1
+        else:
+            self.image = self.imagegroup[0]
+        # resets if crosses limit
+        if self.direction >= 360:
+            self.direction = self.direction - 360
+        if self.direction < 0:
+            self.direction = 360 + self.direction
 
     def draw(self, scr):
         # rotate and scale image
-        # rot = pygame.transform.rotate(
-        #     pygame.transform.scale(self.image, (self.arrowsize(), self.arrowsize()))
-        #     , 360-self.direction)
-        # rotrect = rot.get_rect()
-        # rotrect.center = self.pos.center
+        rot = pygame.transform.rotate(self.image, 360-self.direction)
+        rotrect = rot.get_rect()
+        rotrect.center = self.pos.center
         # delete and redraw
-        #pygame.draw.rect(scr.display, BACKGROUND, (SCREENSIZE[0] / 2 - 100, SCREENSIZE[1] / 2 - 100, 200, 200), 0)
-        scr.display.blit(self.image, self.pos)
+        pygame.draw.rect(scr.display, BACKGROUND, (SCREENSIZE[0] / 2 - 100, SCREENSIZE[1] / 2 - 100, 200, 200), 0)
+        scr.display.blit(rot, rotrect)
 
 
 # event loop
@@ -222,6 +246,7 @@ def eventloop(scr, fnt, clk, hud, wind, boat):
         # scr.display.blit(scr.image, (120, 5, 50, 30), (120, 5, 50, 30))
         hud.draw(fnt, scr, wind)
         # draw boat
+        boat.steer()
         boat.draw(scr)
         # change wind direction & speed
         wind.update()
