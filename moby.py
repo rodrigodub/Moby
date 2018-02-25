@@ -6,8 +6,8 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.024
-# Issue #3
+# v0.026
+# Issue #1
 # 20180217-20180225
 #################################################
 __author__ = 'Rodrigo Nobrega'
@@ -238,10 +238,19 @@ class Boat(object):
         scr.display.blit(rot, rotrect)
 
     def calculatesail(self, wind):
-        if -22.5 < wind.direction - self.direction <= 22.5:
-            self.pointofsail = 'In Irons'
+        if 157.5 < abs(wind.direction - self.direction) <= 202.5:
+            self.pointofsail = 'In irons'
+        elif 112.5 < abs(wind.direction - self.direction) <= 157.5 \
+                or 202.5 < abs(wind.direction - self.direction) <= 247.5:
+            self.pointofsail = 'Close-hauled'
+        elif 67.5 < abs(wind.direction - self.direction) <= 112.5 \
+                or 247.5 < abs(wind.direction - self.direction) <= 292.5:
+            self.pointofsail = 'Beam reach'
+        elif 22.5 < abs(wind.direction - self.direction) <= 67.5 \
+                or 292.5 < abs(wind.direction - self.direction) <= 337.5:
+            self.pointofsail = 'Broad reach'
         else:
-            self.pointofsail = ''
+            self.pointofsail = 'Running'
 
     def update(self, wind):
         self.steer()
