@@ -6,7 +6,7 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.026
+# v0.027
 # Issue #1
 # 20180217-20180225
 #################################################
@@ -210,6 +210,11 @@ class Boat(object):
         # direction
         self.direction = 0
         self.pointofsail = ''
+        # sail image and position
+        self.sailgroup = [resize_image(load_image('moby_sail_open_L.png'), 3), resize_image(load_image('moby_sail_close.png'), 3), resize_image(load_image('moby_sail_open_R.png'), 3)]
+        self.sailimage = self.sailgroup[1]
+        self.sailpos = self.sailimage.get_rect()
+        self.sailpos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
 
     def steer(self):
         # monitor keyboard
