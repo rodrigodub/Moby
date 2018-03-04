@@ -6,7 +6,7 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.028
+# v0.030
 # Issue #7
 # 20180217-20180304
 #################################################
@@ -109,8 +109,8 @@ class Hud(object):
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 5, 140, 15), 0)
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 20, 140, 15), 0)
         pygame.draw.rect(scr.display, BACKGROUND, (HUDLEFT + 95, 35, 140, 15), 0)
-        # pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 140, 15), 0)
-        # pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 20, 140, 15), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 5, 140, 15), 0)
+        pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 20, 140, 15), 0)
         pygame.draw.rect(scr.display, BACKGROUND, (HUDMIDDLE + 90, 35, 140, 15), 0)
         pygame.draw.rect(scr.display, BACKGROUND, (HUDRIGHT + 55, 5, 140, 15), 0)
         # pygame.draw.rect(scr.display, BACKGROUND, (HUDRIGHT + 55, 20, 140, 15), 0)
@@ -119,10 +119,10 @@ class Hud(object):
         scr.display.blit(writetext(fnt, ':  {} deg'.format(wind.direction), LIGHTGREY), (HUDLEFT + 95, 5))
         scr.display.blit(writetext(fnt, ':  {:.1f} m/s'.format(wind.speed), LIGHTGREY), (HUDLEFT + 95, 20))
         scr.display.blit(writetext(fnt, ':  {}'.format(wind.beaufort), LIGHTGREY), (HUDLEFT + 95, 35))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 5))
-        scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDMIDDLE + 90, 20))
+        scr.display.blit(writetext(fnt, ':  {} deg'.format(boat.sailabsolute), LIGHTGREY), (HUDMIDDLE + 90, 5))
+        scr.display.blit(writetext(fnt, ':  {} deg'.format(boat.sailangle), LIGHTGREY), (HUDMIDDLE + 90, 20))
         scr.display.blit(writetext(fnt, ':  {}'.format(boat.pointofsail), LIGHTGREY), (HUDMIDDLE + 90, 35))
-        scr.display.blit(writetext(fnt, ':  {} deg'.format(boat.direction), LIGHTGREY), (HUDRIGHT + 55, 5))
+        scr.display.blit(writetext(fnt, ':  {} deg'.format(boat.heading), LIGHTGREY), (HUDRIGHT + 55, 5))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 20))
         scr.display.blit(writetext(fnt, ':  0', LIGHTGREY), (HUDRIGHT + 55, 35))
 
@@ -209,15 +209,17 @@ class Boat(object):
         self.image = self.imagegroup[2]
         self.pos = self.image.get_rect()
         self.pos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
-        # direction
-        self.direction = 0
+        # boat direction (heading)
+        self.heading = 0
         self.pointofsail = ''
         # sail image and position
         self.sailgroup = [resize_image(load_image('moby_sail_open_L.png'), 3), resize_image(load_image('moby_sail_close.png'), 3), resize_image(load_image('moby_sail_open_R.png'), 3)]
         self.sailimage = self.sailgroup[1]
         self.sailpos = self.sailimage.get_rect()
         self.sailpos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
+        # sail relative angle and absolute angle
         self.sailangle = 0
+        self.sailabsolute = 0
 
     def steer(self):
         # monitor keyboard
@@ -225,17 +227,17 @@ class Boat(object):
         # move rudder
         if keys[K_LEFT]:
             self.image = self.imagegroup[1]
-            self.direction -= 1
+            self.heading -= 1
         elif keys[K_RIGHT]:
             self.image = self.imagegroup[2]
-            self.direction += 1
+            self.heading += 1
         else:
             self.image = self.imagegroup[0]
         # resets if crosses limit
-        if self.direction >= 360:
-            self.direction = self.direction - 360
-        if self.direction < 0:
-            self.direction = 360 + self.direction
+        if self.heading >= 360:
+            self.heading = self.heading - 360
+        if self.heading < 0:
+            self.heading = 360 + self.heading
 
     def trim(self):
         # monitor keyboard
@@ -248,28 +250,34 @@ class Boat(object):
         # set the limits
         if self.sailangle > 90:
             self.sailangle = 90
-        if self.sailangle < 0:
-            self.sailangle = 0
+        if self.sailangle < -90:
+            self.sailangle = -90
+        # calculate sail absolute angle
+        self.sailabsolute = self.heading + self.sailangle
+        if self.sailabsolute >= 360:
+            self.sailabsolute = self.sailabsolute - 360
+        if self.sailabsolute < 0:
+            self.sailabsolute = 360 + self.sailabsolute
         # define the sail image
 
     def calculatepointofsail(self, wind):
-        if 157.5 < abs(wind.direction - self.direction) <= 202.5:
+        if 157.5 < abs(wind.direction - self.heading) <= 202.5:
             self.pointofsail = 'In irons'
-        elif 112.5 < abs(wind.direction - self.direction) <= 157.5 \
-                or 202.5 < abs(wind.direction - self.direction) <= 247.5:
+        elif 112.5 < abs(wind.direction - self.heading) <= 157.5 \
+                or 202.5 < abs(wind.direction - self.heading) <= 247.5:
             self.pointofsail = 'Close-hauled'
-        elif 67.5 < abs(wind.direction - self.direction) <= 112.5 \
-                or 247.5 < abs(wind.direction - self.direction) <= 292.5:
+        elif 67.5 < abs(wind.direction - self.heading) <= 112.5 \
+                or 247.5 < abs(wind.direction - self.heading) <= 292.5:
             self.pointofsail = 'Beam reach'
-        elif 22.5 < abs(wind.direction - self.direction) <= 67.5 \
-                or 292.5 < abs(wind.direction - self.direction) <= 337.5:
+        elif 22.5 < abs(wind.direction - self.heading) <= 67.5 \
+                or 292.5 < abs(wind.direction - self.heading) <= 337.5:
             self.pointofsail = 'Broad reach'
         else:
             self.pointofsail = 'Running'
 
     def draw(self, scr):
         # rotate boat image
-        rot = pygame.transform.rotate(self.image, 360-self.direction)
+        rot = pygame.transform.rotate(self.image, 360-self.heading)
         rotrect = rot.get_rect()
         rotrect.center = self.pos.center
         # rotate sail image
@@ -279,6 +287,7 @@ class Boat(object):
 
     def update(self, wind):
         self.steer()
+        self.trim()
         self.calculatepointofsail(wind)
 
 
