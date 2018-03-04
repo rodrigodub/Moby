@@ -6,15 +6,17 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.027
-# Issue #1
-# 20180217-20180225
+# v0.028
+# Issue #7
+# 20180217-20180304
 #################################################
 __author__ = 'Rodrigo Nobrega'
 
 
 # import
-import os, sys, pygame
+import os
+import sys
+import pygame
 from pygame.locals import *
 import random
 # import math
@@ -215,10 +217,12 @@ class Boat(object):
         self.sailimage = self.sailgroup[1]
         self.sailpos = self.sailimage.get_rect()
         self.sailpos.center = (SCREENSIZE[0] / 2, SCREENSIZE[1] / 2)
+        self.sailangle = 0
 
     def steer(self):
         # monitor keyboard
         keys = pygame.key.get_pressed()
+        # move rudder
         if keys[K_LEFT]:
             self.image = self.imagegroup[1]
             self.direction -= 1
@@ -233,16 +237,22 @@ class Boat(object):
         if self.direction < 0:
             self.direction = 360 + self.direction
 
-    def draw(self, scr):
-        # rotate and scale image
-        rot = pygame.transform.rotate(self.image, 360-self.direction)
-        rotrect = rot.get_rect()
-        rotrect.center = self.pos.center
-        # delete and redraw
-        pygame.draw.rect(scr.display, BACKGROUND, (SCREENSIZE[0] / 2 - 100, SCREENSIZE[1] / 2 - 100, 200, 200), 0)
-        scr.display.blit(rot, rotrect)
+    def trim(self):
+        # monitor keyboard
+        keys = pygame.key.get_pressed()
+        # move rudder
+        if keys[K_UP]:
+            self.sailangle += 1
+        elif keys[K_DOWN]:
+            self.sailangle -= 1
+        # set the limits
+        if self.sailangle > 90:
+            self.sailangle = 90
+        if self.sailangle < 0:
+            self.sailangle = 0
+        # define the sail image
 
-    def calculatesail(self, wind):
+    def calculatepointofsail(self, wind):
         if 157.5 < abs(wind.direction - self.direction) <= 202.5:
             self.pointofsail = 'In irons'
         elif 112.5 < abs(wind.direction - self.direction) <= 157.5 \
@@ -257,9 +267,19 @@ class Boat(object):
         else:
             self.pointofsail = 'Running'
 
+    def draw(self, scr):
+        # rotate boat image
+        rot = pygame.transform.rotate(self.image, 360-self.direction)
+        rotrect = rot.get_rect()
+        rotrect.center = self.pos.center
+        # rotate sail image
+        # delete and redraw
+        pygame.draw.rect(scr.display, BACKGROUND, (SCREENSIZE[0] / 2 - 100, SCREENSIZE[1] / 2 - 100, 200, 200), 0)
+        scr.display.blit(rot, rotrect)
+
     def update(self, wind):
         self.steer()
-        self.calculatesail(wind)
+        self.calculatepointofsail(wind)
 
 
 # event loop
