@@ -29,3 +29,4 @@ Sail across the world over real satellite imagery. Record visited places on a vi
 - Wikipedia article for the wind's [Beaufort Scale](https://en.wikipedia.org/wiki/Beaufort_scale)
 - Wikihow [How to Calculate Wind Load](https://www.wikihow.com/Calculate-Wind-Load) (SI and Imperial)
 - Sciencing [How to Calculate Wind Loads From Wind Speeds](https://sciencing.com/calculate-wind-loads-wind-speeds-6104140.html) (Imperial)
+- [Sailing Terminology](http://discoversailing.org.au/sailing-terminology/)
