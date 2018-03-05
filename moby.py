@@ -6,7 +6,7 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.032
+# v0.033
 # Issue #7
 # 20180217-20180305
 #################################################
@@ -239,7 +239,7 @@ class Boat(object):
         if self.heading < 0:
             self.heading = 360 + self.heading
 
-    def trim(self):
+    def trim(self, wind):
         # monitor keyboard
         keys = pygame.key.get_pressed()
         # move rudder
@@ -258,11 +258,18 @@ class Boat(object):
             self.sailabsolute = self.sailabsolute - 360
         if self.sailabsolute < 0:
             self.sailabsolute = 360 + self.sailabsolute
-        # define the sail image
-        if self.sailangle > 0:
-            self.sailimage = self.sailgroup[0]
-        else:
-            self.sailimage = self.sailgroup[2]
+        # define the sail image - it´´ related to the wind direction
+        # if self.sailangle > 0:
+        #     self.sailimage = self.sailgroup[0]
+        # else:
+        #     self.sailimage = self.sailgroup[2]
+        if 170 < abs(wind.direction - self.sailabsolute) < 190:
+            self.sailimage = self.sailgroup[1]
+        # elif 0 < wind.direction - self.sailabsolute < 170:
+        #     self.sailimage = self.sailgroup[0]
+        # elif 0 < self.sailabsolute - wind.direction < 170:
+        #     self.sailimage = self.sailgroup[2]
+
 
     def calculatepointofsail(self, wind):
         if 157.5 < abs(wind.direction - self.heading) <= 202.5:
@@ -295,7 +302,7 @@ class Boat(object):
 
     def update(self, wind):
         self.steer()
-        self.trim()
+        self.trim(wind)
         self.calculatepointofsail(wind)
 
 
