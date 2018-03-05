@@ -6,9 +6,9 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.030
+# v0.031
 # Issue #7
-# 20180217-20180304
+# 20180217-20180305
 #################################################
 __author__ = 'Rodrigo Nobrega'
 
@@ -259,6 +259,10 @@ class Boat(object):
         if self.sailabsolute < 0:
             self.sailabsolute = 360 + self.sailabsolute
         # define the sail image
+        if self.sailangle > 0:
+            self.sailimage = self.sailgroup[0]
+        else:
+            self.sailimage = self.sailgroup[2]
 
     def calculatepointofsail(self, wind):
         if 157.5 < abs(wind.direction - self.heading) <= 202.5:
@@ -281,9 +285,13 @@ class Boat(object):
         rotrect = rot.get_rect()
         rotrect.center = self.pos.center
         # rotate sail image
+        rotsail = pygame.transform.rotate(self.sailimage, 360-self.sailabsolute)
+        rotsailrect = rotsail.get_rect()
+        rotsailrect.center = self.sailpos.center
         # delete and redraw
         pygame.draw.rect(scr.display, BACKGROUND, (SCREENSIZE[0] / 2 - 100, SCREENSIZE[1] / 2 - 100, 200, 200), 0)
         scr.display.blit(rot, rotrect)
+        scr.display.blit(rotsail, rotsailrect)
 
     def update(self, wind):
         self.steer()
