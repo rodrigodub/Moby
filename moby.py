@@ -6,9 +6,9 @@
 # Usage:
 # > python3 moby.py
 #
-# v0.033
+# v0.034
 # Issue #7
-# 20180217-20180305
+# 20180217-20180306
 #################################################
 __author__ = 'Rodrigo Nobrega'
 
@@ -51,6 +51,14 @@ def writetext(font, text, colour):
     # colour: tuple (r, g, b)
     a = font.render(text, 0, colour)
     return a
+
+
+# find the opposite of an angle (in degrees)
+def opposite(angle):
+    if angle < 180:
+        return 180 + angle
+    else:
+        return angle - 180
 
 
 # screen
@@ -258,17 +266,19 @@ class Boat(object):
             self.sailabsolute = self.sailabsolute - 360
         if self.sailabsolute < 0:
             self.sailabsolute = 360 + self.sailabsolute
-        # define the sail image - it´´ related to the wind direction
-        # if self.sailangle > 0:
-        #     self.sailimage = self.sailgroup[0]
-        # else:
-        #     self.sailimage = self.sailgroup[2]
+        # define the sail image - it's related to the wind direction
         if 170 < abs(wind.direction - self.sailabsolute) < 190:
             self.sailimage = self.sailgroup[1]
-        # elif 0 < wind.direction - self.sailabsolute < 170:
-        #     self.sailimage = self.sailgroup[0]
-        # elif 0 < self.sailabsolute - wind.direction < 170:
-        #     self.sailimage = self.sailgroup[2]
+        elif wind.direction < 180:
+            if wind.direction < self.sailabsolute < opposite(wind.direction):
+                self.sailimage = self.sailgroup[0]
+            else:
+                self.sailimage = self.sailgroup[2]
+        else:
+            if wind.direction < self.sailabsolute or self.sailabsolute < opposite(wind.direction):
+                self.sailimage = self.sailgroup[0]
+            else:
+                self.sailimage = self.sailgroup[2]
 
 
     def calculatepointofsail(self, wind):
